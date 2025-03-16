@@ -9,6 +9,9 @@ def home(request):
 def gp(request):
     doctors = Doctor.objects.all()
 
+    return render(request=request, template_name='gp.html', context={'doctors': doctors})
+
+
 def signup(request):
     form = SignupForm()
 
