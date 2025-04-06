@@ -3,10 +3,11 @@
 
 {% load crispy_forms_tags %}
 {% block content %}
-    <form action="/signin" method="post">
+    <form id="login-form" action="/signin/" method="post">
+        {% csrf_token %}
         {% crispy form %}
         <div class="form-group">
-            <button type="submit" class="btn btn-lg btn-success">Sign In</button>
+            <button onclick="document.getElementById('login-form').submit();" class="btn btn-lg btn-success">Sign In</button>
         </div>
     </form>
 {% endblock %}

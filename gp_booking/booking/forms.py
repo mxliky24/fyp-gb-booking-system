@@ -1,27 +1,41 @@
-from booking.models import Doctor, Patient
+from booking.models import Doctor, Patient, CustomUser
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth.models import User
+
+User = get_user_model()
+
+class CustomUserCreationForm(UserCreationForm):
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email', 'password']
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email', 'password']
 
 class LoginForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email', 'password']
 
-class SignupForm(UserCreationForm):
+class SignupForm(CustomUserCreationForm):
     class Meta:
-        model = Patient
-        fields = ['first_name', 'last_name', 'email', 'password']
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email']
 
-class AddDoctorForm(UserCreationForm):
-    class Meta:
-        model = Doctor
-        fields = ['first_name', 'last_name', 'email', 'password', 'picture']
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.username = user.email  # optional: avoid blank username errors
+        if commit:
+            user.save()
+            Patient.objects.create(user=user, phone=self.cleaned_data.get('phone'))
+        return user
 
-class EditDoctorForm(UserCreationForm):
-    class Meta:
-        model = Doctor
-        fields = ['first_name', 'last_name', 'email', 'password', 'picture']
+
+
 
 
 

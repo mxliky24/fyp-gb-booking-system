@@ -1,21 +1,47 @@
+from booking.user_manager import CustomUserManager
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-class Patient(User):
+
+class Role(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return f"role {self.name}"
+
+class CustomUser(AbstractUser, PermissionsMixin):
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=150)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'password']
+    backend = 'booking.backend.EmailBackend'
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
+
+
+class Patient(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     phone  = models.CharField(max_length=20, blank=True, null=True)
+    backend = 'booking.backend.EmailBackend'
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
 
-class Doctor(User):
+class Doctor(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     speciality = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    picture = models.ImageField(upload_to='doctor_pictures', blank=True, null=True)
+    picture = models.ImageField(upload_to='static/doctor_pictures', blank=True, null=True)
+    backend = 'booking.backend.EmailBackend'
 
     def __str__(self):
         return f"Dr.{self.user.get_full_name() or self.user.username}"
-# Create your models here.
+
 
 class Slot(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -50,3 +76,4 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.doctor} {self.patient} {self.review_text}"
+

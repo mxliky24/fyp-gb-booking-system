@@ -1,5 +1,28 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
     <h1 class="text-center">All the GPs will be displayed here</h1>
+
+    <div class="row">
+        {% for doctor in doctors %}
+            <div class="col-md-4">
+                <div class="card w-75">
+                    <img class="card-img-top" src="{% static doctor.picture %}" alt="Doctor picture">
+                    <div class="card-body">
+                        <h4 class="card-title"><strong>name: </strong>{{ doctor }}
+                        </h4>
+                        <h4 class="card-text"><strong>speciality: </strong>{{ doctor.speciality }}</h4>
+                        <h4 class="card=text"><strong>Appointment price: </strong>£{{ doctor.price }}</h4>
+                    </div>
+                    {% if user and user.is_authenticated and user.role.name == "PATIENT" %}
+                        <div class="card-footer text-center">
+                            <a href="{% url 'gp_info' doctor_id=doctor.id %}" class="btn btn-lg btn-primary w-100">Book</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

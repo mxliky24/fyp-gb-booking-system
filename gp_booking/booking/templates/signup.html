@@ -4,10 +4,12 @@
 
 {% block content %} 
 
-    <form method="post" action="/signup">
+    <form id="signup-form" method="post" action="/signup/">
+        {% csrf_token %}
         {% crispy form %}
+        <div id="form-errors">{{ form_errors }}</div>
         <div class="form-group">
-            <button type="submit" class="btn btn-lg btn-success">Sign Up</button>
+            <button onclick="document.getElementById('signup-form').submit()" type="submit" class="btn btn-lg btn-success">Sign Up</button>
         </div>
     </form>
     

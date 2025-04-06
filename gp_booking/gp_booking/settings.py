@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'booking.CustomUser'
+
 
 # Application definition
 
@@ -41,11 +43,13 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'crispy_forms',
     'crispy_bootstrap5',
+    'active_link'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 CRISPY_ALLOWED_TEMPLATE_PACKS = ('bootstrap', 'uni_form', 'bootstrap3', 'bootstrap4', 'semantic-ui', 'bootstrap5')
-
+LOGIN_REDIRECT_URL = "/home/"
+LOGOUT_REDIRECT_URL = "/home/"
 
 
 MIDDLEWARE = [
@@ -57,6 +61,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',
+                           'booking.backend.EmailBackend']
 
 ROOT_URLCONF = 'gp_booking.urls'
 
@@ -75,6 +82,9 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = '/static/'
+
 
 WSGI_APPLICATION = 'gp_booking.wsgi.application'
 
