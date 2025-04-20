@@ -3,8 +3,9 @@ from django.urls import path
 from .views import home, signup, signin, gp
 from django.shortcuts import redirect
 
+app_name = "booking"
 urlpatterns = [
-    path('', lambda request: redirect('home', permanent=False)),
+    path('', lambda request: redirect('booking:home', permanent=False)),
     path('home/', view=home, name='home'),
     path('signup/', view=signup, name='signup'),
     path('signin/', view=signin, name='signin'),

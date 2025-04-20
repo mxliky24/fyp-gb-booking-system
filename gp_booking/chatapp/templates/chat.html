@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="messages_container">
+        <div class="messages">
+            {% if user_messages %}
+                {% for message in user_messages %}
+                    <p><strong>{{ message.sender }}: </strong>{{ message.message_text }}</p>
+                {% endfor %}
+            {% else %}
+                <h2>no messages to display</h2>
+            {% endif %}
+        </div>
+        <form method="post" id="message-form">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-lg form-control">Send</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function(){
+            console.log('jquery started');
+            $('#message-form').on('submit', (event)=>{
+                console.log('submitted')
+                event.preventDefault();
+
+                $.ajaxSetup({
+                    headers : {"X-CSRFToken" : '{{ csrf_token }}'}
+                })
+
+                $.ajax({
+                    url: '{% url "chatapp:make_messages" email=user.email %}',
+                    type: 'POST',
+                    data: {"message_text" : $('#id_message_text').val()},
+                    dataType: 'json',
+                    success:(response)=>{
+                        var messageContainerElement = $('.messages');
+                        var newMessagesHtml = response.data.new_messages.map(newMessage => {
+                            var newMessageElement = document.createElement('p');
+                            $(newMessageElement).html((i, original)=>{
+                                return `<p><strong>${newMessage.sender}: </strong>${newMessage.message_text}</p>`;
+                            });
+                        });
+                        $(messageContainerElement).append(newMessagesHtml);
+                    },
+                    error:(err)=>{
+                        console.log(err);
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}

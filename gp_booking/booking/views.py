@@ -1,4 +1,3 @@
-from lib2to3.fixes.fix_input import context
 from logging import raiseExceptions
 
 from django.core.signals import request_started
@@ -18,6 +17,14 @@ def gp(request):
     doctors = Doctor.objects.all()
     return render(request=request, template_name='gp.html', context={'doctors': doctors})
 
+def cancel_appointment(request, appointment_id):
+    pass
+
+def edit_appointment(request, doctor_id):
+    pass
+
+def confirm_edit_appointment(request, slot_id):
+    pass
 
 def signup(request):
     form = SignupForm()
@@ -81,4 +88,3 @@ def appointment(request, doctor_id, patient_id):
         appointment.save()
         messages.success(request, "Your appointment has been booked")
         return redirect('gp_info', doctor_id=doctor_id)
-

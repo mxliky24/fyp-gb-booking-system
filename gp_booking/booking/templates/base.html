@@ -23,12 +23,15 @@
             </div>
         </div>
         <ul class="nav navbar-nav">
-            <li class="nav-item"><a class="nav-link {% active_link 'home' 'active' %}" href="/home/">Home</a></li>
-            <li class="nav-item"><a class="nav-link {% active_link 'gp' 'active' %}" href="/gp">GPs</a></li>
+            <li class="nav-item"><a class="nav-link {% active_link 'booking:home' 'active' %}" href="/home/">Home</a></li>
+            <li class="nav-item"><a class="nav-link {% active_link 'booking:gp' 'active' %}" href="/gp">GPs</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
 
             {% if user and user.is_authenticated %}
+                <li class="nav-item">
+                    <a href="{% url 'chatapp:get_messages' email=user.email %}" class="nav-link {% active_link 'chatapp:get_messages' 'active' %}">Chat</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle nav-link" data-bs-toggle="dropdown" href="#">{{ user.first_name }} <span
                             class="caret"></span>
@@ -53,10 +56,10 @@
                 </li>
 
             {% else %}
-                <li class="nav-item"><a class="nav-link {% active_link 'signup' 'active' %}" href="/signup"><span
+                <li class="nav-item"><a class="nav-link {% active_link 'booking:signup' 'active' %}" href="/signup"><span
                         class="glyphicon glyphicon-user"></span>
                     Sign Up</a></li>
-                <li class="nav-item"><a class="nav-link {% active_link 'signin' 'active' %}" href="/signin"><span
+                <li class="nav-item"><a class="nav-link {% active_link 'booking:signin' 'active' %}" href="/signin"><span
                         class="glyphicon glyphicon-log-in"></span>
                     Sign In</a></li>
             {% endif %}
