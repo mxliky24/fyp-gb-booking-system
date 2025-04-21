@@ -3,15 +3,16 @@
 {% bootstrap_javascript %}
 {% load active_link_tags %}
 
-<div class="offcanvas offcanvas-start">
+<button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#sidebar">Open sidebar</button>
+<div id="sidebar" class="offcanvas offcanvas-start bg-dark">
     <div class="offcanvas-header">
         <h1 class="offcanvas-title">Doctor name</h1>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
         <div class="list-group">
-            <a href="#" class="list-group-item">Appointments</a>
-            <a href="#" class="list-group-item">Reviews</a>
+            <a href="#" class="list-group-item mb-3">Appointments</a>
+            <a href="#" class="list-group-item mb-3">Reviews</a>
         </div>
     </div>
 </div>

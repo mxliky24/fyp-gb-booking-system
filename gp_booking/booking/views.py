@@ -1,7 +1,7 @@
 from logging import raiseExceptions
 
 from django.core.signals import request_started
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from .models import Appointment, Doctor, Patient, Role, Slot
 from .forms import SignupForm, LoginForm
@@ -17,14 +17,44 @@ def gp(request):
     doctors = Doctor.objects.all()
     return render(request=request, template_name='gp.html', context={'doctors': doctors})
 
+def show_appointments(request, doctor_id):
+    doctor = Doctor.objects.get(id=doctor_id)
+    if doctor is not None:
+        doctor_slots =  doctor.slot_set.all()
+        if len(doctor_slots) > 0:
+            return render(request=request, template_name="doctor/appointments.html", context={'slots' : doctor_slots})
+        else:
+            return render(request=request, template_name='doctor/appointments.html', context={'slots': []})
+    else:
+        raiseExceptions(f"Could not find doctor with Id f{doctor_id}")
+
 def cancel_appointment(request, appointment_id):
-    pass
+    if request.method == "DELETE":
+        appointment = Appointment.objects.get(id=appointment_id)
+        appointment.status = "Cancelled"
+        appointment.save()
+        return redirect('show_appointments', doctor_id=appointment.slot.doctor_id)
 
-def edit_appointment(request, doctor_id):
-    pass
-
-def confirm_edit_appointment(request, slot_id):
-    pass
+def edit_appointment(request, doctor_id, appointment_id, slot_id):
+    if request.method == "PUT":
+        slot = Slot.objects.get(id=slot_id)
+        appointment = Appointment.objects.get(id=appointment_id)
+        doctor = Doctor.objects.get(id=doctor_id)
+        if slot is not None and appointment is not None and doctor is not None:
+            appointment.slot = slot
+            appointment.save()
+            return redirect('show_appointments', doctor_id=appointment.slot.doctor_id)
+    else:
+        doctor = Doctor.objects.get(id=doctor_id)
+        appointment = Appointment.objects.get(id=appointment_id)
+        if doctor is not None and appointment is not None:
+            slots = doctor.slot_set.exclude(id=slot_id)
+            if len(slots) > 0:
+                return render(request=request, template_name="doctor/edit_appointment.html", context={'slots' : slots, 'appointment' : appointment, 'doctor' : doctor})
+            else:
+                raiseExceptions("The slots cannot be empty")
+        else:
+            raiseExceptions("Doctor or Appointment cannot be none")
 
 def signup(request):
     form = SignupForm()

@@ -43,7 +43,7 @@
                             </li>
                         {% else %}
                             <li>
-                                <a class="dropdown-item" href="#">Doctor Profile</a>
+                                <a class="dropdown-item" href="{% url 'booking:show-appointments' doctor_id=user.doctor.id %}">Doctor Profile</a>
                             </li>
                         {% endif %}
                         <li>

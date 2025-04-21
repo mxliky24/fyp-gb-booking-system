@@ -2,70 +2,89 @@
 
 {% block content %}
 
-<div id="cancel-modal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Cancel Appointment Modal</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                Cancel This Appointment?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-lg btn-primary" onclick="document.getElementById('').submit();">Confirm</button>
-                <button type="button" class="btn btn-lg btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+    <div id="cancel-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancel Appointment Modal</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Cancel This Appointment?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-lg btn-primary"
+                            onclick="onCancelAppointment">Confirm
+                    </button>
+                    <button type="button" class="btn btn-lg btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-3">
-          {% include % 'sidebar.html'}
-    </div>
-    <div class="md-7">
-        <table class="table">
-            <thead>
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'sidebar.html' %}
+        </div>
+        <div class="md-7">
+            <table class="table">
+                <thead>
                 <tr>
+                    <th>Appointment no</th>
                     <th>Appointee</th>
                     <th>Appointment date</th>
                     <th>Appointment time</th>
                     <th>Appointment status</th>
                     <th>Modify Appointment</th>
                     <th>Cancel Appointment</th>
-                    <th>Appointment no</th>
                 </tr>
-            </thead>
-            {% if len (user.appointments == 0) %}
-                <h2>No appointments to display</h2>
-            {% else %}
-                {% for index, appointment in enumerate(user.appointments) %}
-                    <tr>
-                        <td>{{ appointment.id }}</td>
-                        <td>{{ appoitment.patient }}</td>
-                        <td>{{ appointment.slot.date }}</td>
-                        <td>{{ appointment.slot.time }}</td>
-                        <td>{{ appointment.status }}</td>
-                        <form style="display: none;" action="{% url 'cancel_appointment' appointment_id=appointment.id%}" method="delete">
-                            {% csrf_token %}
-                        </form>
-                        <td><a href="{% url 'edit_appointment' doctor_id=user.id %}" class="btn-warning btn btn-lg">Modify Appointment</a></td>
-                        <td><button data-bs-toggle="modal" data-bs-target="#cancel-modal" class="btn-danger btn btn-lg">Cancel Appointment</button></td>
-                    </tr>
-                {% endfor %}
-                <form style="display: none;" action="{% url 'appointment_status' doctor_id=user.id %}" method="put">
-                    {% csrf_token %}
-                    <input type="hidden" name="appointment_status">
-                </form>
-                
-            {% endif %}
-        </table>
+                </thead>
+                {% if slots|length  == 0 %}
+                    <h2>No appointments to display</h2>
+                {% else %}
+                    {% for slot in slots %}
+                        {% for appointment in slot.appointment_set.all %}
+                            <tr>
+                                <td>{{ appointment.id }}</td>
+                                <td>{{ appointment.patient }}</td>
+                                <td>{{ appointment.slot.date }}</td>
+                                <td>{{ appointment.slot.time }}</td>
+                                <td>{{ appointment.status }}</td>
+                                <form id="{{ appointment.id }}" style="display: none;"
+                                      action="{% url 'booking:cancel_appointment' appointment_id=appointment.id %}"
+                                      method="delete">
+                                    {% csrf_token %}
+                                </form>
+                                <td><a href="{% url 'booking:edit_appointment' slot_id=appointment.slot_id doctor_id=user.doctor.id appointment_id=appointment.id %}"
+                                       class="btn-warning btn btn-lg">Modify Appointment</a></td>
+                                <td>
+                                    <button onclick="onOpenModal(this)" data-attr="{{ appointment.id }}" data-bs-toggle="modal" data-bs-target="#cancel-modal"
+                                            class="btn-danger btn btn-lg">Cancel Appointment
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+
+                {% endif %}
+            </table>
+        </div>
     </div>
-</div>
 
 {% endblock %}
 
 {% block scripts %}
-
+    <script>
+        const onOpenModal = (element) => {
+            var appointmentId = $(element).attr('data-attr');
+            
+            $('#cancel-modal').attr('data-attr', appointmentId);
+        }
+        
+        const onCancelAppointment = () => {
+            var appointmentId = $('#cancel-modal').attr('data-attr');
+            
+            document.getElementById(appointmentId).submit();
+        }
+    </script>
 {% endblock %}
