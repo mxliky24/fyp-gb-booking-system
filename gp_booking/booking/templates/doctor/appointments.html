@@ -52,7 +52,7 @@
                                 <td>{{ appointment.status }}</td>
                                 <form id="{{ appointment.id }}" style="display: none;"
                                       action="{% url 'booking:cancel_appointment' appointment_id=appointment.id %}"
-                                      method="delete">
+                                      method="post">
                                     {% csrf_token %}
                                 </form>
                                 <td><a href="{% url 'booking:edit_appointment' slot_id=appointment.slot_id doctor_id=user.doctor.id appointment_id=appointment.id %}"

@@ -29,10 +29,12 @@ def show_appointments(request, doctor_id):
         raiseExceptions(f"Could not find doctor with Id f{doctor_id}")
 
 def cancel_appointment(request, appointment_id):
-    if request.method == "DELETE":
+    if request.method == "POST":
         appointment = Appointment.objects.get(id=appointment_id)
         appointment.status = "Cancelled"
+        appointment.slot.is_booked = False
         appointment.save()
+        messages.success(request, "Appointment cancelled")
         return redirect('show_appointments', doctor_id=appointment.slot.doctor_id)
 
 def edit_appointment(request, doctor_id, appointment_id, slot_id):
@@ -43,6 +45,7 @@ def edit_appointment(request, doctor_id, appointment_id, slot_id):
         if slot is not None and appointment is not None and doctor is not None:
             appointment.slot = slot
             appointment.save()
+            messages.success(request, f"The appointment has been updated to {appointment}")
             return redirect('show_appointments', doctor_id=appointment.slot.doctor_id)
     else:
         doctor = Doctor.objects.get(id=doctor_id)

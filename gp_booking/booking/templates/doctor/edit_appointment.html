@@ -16,7 +16,7 @@
                                    name="timeslot" class="timeslot"/>
                             <span>{{ slot.time }}</span>
                         </div>
-                        <form method="put" style="display: none;" action="{% url 'booking:edit_appointment' doctor_id=doctor.id appointment_id=appointment.id slot_id=slot.id%}" id="{{ slot.id }}">
+                        <form method="post" style="display: none;" action="{% url 'booking:edit_appointment' doctor_id=doctor.id appointment_id=appointment.id slot_id=slot.id%}" id="{{ slot.id }}">
                             {% csrf_token %}
                             
                         </form>
