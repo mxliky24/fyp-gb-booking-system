@@ -1,10 +1,9 @@
 from logging import raiseExceptions
 
-from django.core.signals import request_started
-from django.http import HttpResponse, Http404
-from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Appointment, Doctor, Patient, Role, Slot
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, AppointmentForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -35,25 +34,26 @@ def cancel_appointment(request, appointment_id):
         appointment.slot.is_booked = False
         appointment.save()
         messages.success(request, "Appointment cancelled")
-        return redirect('show_appointments', doctor_id=appointment.slot.doctor_id)
+        return redirect('booking:show-appointments', doctor_id=appointment.slot.doctor_id)
 
 def edit_appointment(request, doctor_id, appointment_id, slot_id):
-    if request.method == "PUT":
+    if request.method == "POST":
         slot = Slot.objects.get(id=slot_id)
-        appointment = Appointment.objects.get(id=appointment_id)
+        appointment = get_object_or_404(Appointment, pk=appointment_id)
         doctor = Doctor.objects.get(id=doctor_id)
-        if slot is not None and appointment is not None and doctor is not None:
-            appointment.slot = slot
-            appointment.save()
-            messages.success(request, f"The appointment has been updated to {appointment}")
-            return redirect('show_appointments', doctor_id=appointment.slot.doctor_id)
+        form = AppointmentForm(request.POST, instance=appointment, doctor=doctor, current_slot=slot)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "The appointment has been updated")
+            return redirect('booking:show-appointments', doctor_id=doctor_id)
     else:
         doctor = Doctor.objects.get(id=doctor_id)
         appointment = Appointment.objects.get(id=appointment_id)
+        form = AppointmentForm(instance=appointment, current_slot= appointment.slot, doctor=doctor)
         if doctor is not None and appointment is not None:
-            slots = doctor.slot_set.exclude(id=slot_id)
+            slots = doctor.slot_set.all()
             if len(slots) > 0:
-                return render(request=request, template_name="doctor/edit_appointment.html", context={'slots' : slots, 'appointment' : appointment, 'doctor' : doctor})
+                return render(request=request, template_name="doctor/edit_appointment.html", context={'slots' : slots, 'appointment' : appointment, 'doctor' : doctor, 'form' : form})
             else:
                 raiseExceptions("The slots cannot be empty")
         else:
@@ -112,12 +112,15 @@ def appointment(request, doctor_id, patient_id):
             messages.error(request, "Please choose a slot to book an appointment")
             return redirect('gp_info', doctor_id=doctor_id)
         slot = Slot.objects.get(id=slot_id)
-        slot.is_booked = True
-        slot.save()
-        appointment = Appointment()
-        appointment.patient = patient
-        appointment.slot = slot
-        appointment.status = 'Confirmed'
-        appointment.save()
-        messages.success(request, "Your appointment has been booked")
-        return redirect('gp_info', doctor_id=doctor_id)
+        if not slot.is_booked:
+            slot.is_booked = True
+            slot.save()
+            appointment = Appointment()
+            appointment.patient = patient
+            appointment.slot = slot
+            appointment.status = 'Confirmed'
+            appointment.save()
+            messages.success(request, "Your appointment has been booked")
+            return redirect('booking:gp_info', doctor_id=doctor_id)
+        messages.error(request, "The appointment is already booked")
+        return redirect('booking:gp_ingo', doctor_id=doctor_id)

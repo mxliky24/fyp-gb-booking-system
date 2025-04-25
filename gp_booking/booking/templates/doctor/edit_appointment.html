@@ -9,50 +9,14 @@
         <p><strong>Current appointment date: </strong>{{ appointment.slot }}</p>
         <div class="card-body">
             <div class="row">
-                {% for slot in doctor.slot_set.all %}
-                    <div class="col-md-4 py-4">
-                        <div class="border">
-                            <input onchange="onTimeSelected(this)" data-attr="{{ slot.id }}" type="radio"
-                                   name="timeslot" class="timeslot"/>
-                            <span>{{ slot.time }}</span>
-                        </div>
-                        <form method="post" style="display: none;" action="{% url 'booking:edit_appointment' doctor_id=doctor.id appointment_id=appointment.id slot_id=slot.id%}" id="{{ slot.id }}">
-                            {% csrf_token %}
-                            
-                        </form>
-                    </div>
-                {% endfor %}
-            
+                <div class="col-md-6 offset-md-3 mt-4">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-warning">Save Changes</button>
+                    </form>
+                </div>
             </div>
         </div>
-    <div class="card-footer">
-        <button type="button" onclick="onChangePressed()" class="btn mb-4 btn-lg btn-warning w-100">Save Changes</button>
     </div>
-    </div>
-{% endblock %}
-
-{% block scripts %}
-    <script>
-        const onTimeSelected = (e) => {
-            var slot_id = $(e).attr('data-attr');
-
-            let slot_id_val = document.getElementById('slot_id_val');
-
-            $(slot_id_val).val(slot_id);
-
-            console.log(slot_id_val);
-        }
-
-        const onChangePressed = () => {
-            var radioInput = $('.border').find('input[type="radio"]').prop('checked', true);
-            
-            var slot_id = $(radioInput).attr('data-attr')
-            if(slot_id == undefined){
-                alert('please select a slot');
-                return;
-            }
-            
-            document.getElementById(slot_id).submit();
-        }
-    </script>
 {% endblock %}

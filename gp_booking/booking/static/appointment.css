@@ -1,0 +1,11 @@
+.Cancelled {
+    color: red;
+}
+
+.Confirmed {
+    color: green;
+}
+
+.Pending {
+    color: yellow;
+}
