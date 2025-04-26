@@ -7,8 +7,10 @@
     <title>
         {% block title %}{% endblock %}
     </title>
-    {% block styles %}  {% endblock %}
     {% load static %}
+    {% block styles %}
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% endblock %}
     <script src="{% static 'jquery-3.7.1.js' %}"></script>
     {% load django_bootstrap5 %}
     {% bootstrap_css %}
@@ -18,7 +20,7 @@
 </head>
 
 <body>
-    <navbar class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <navbar class="navbar navbar-expand-lg navbar-dark bg-green">
         <div class="container">
             <div class="navbar-header">
                 <div>
@@ -46,7 +48,7 @@
                     <ul class="dropdown-menu">
                         {% if user.role.name == "PATIENT" %}
                         <li>
-                            <a class="dropdown-item" href="#">Patient Profile</a>
+                            <a class="dropdown-item" href="{% url 'booking:show_patients_appointments' patient_id=user.patient.id %}">Patient Profile</a>
                         </li>
                         {% else %}
                         <li>
@@ -84,7 +86,7 @@
         $(document).ready(function () {
             console.log('document ready');
             setTimeout(() => {
-                $('.alert').fadeOut('show');
+                $('.alert').fadeOut('slow');
             }, 3000)
         })
 

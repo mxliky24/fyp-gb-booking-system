@@ -1,0 +1,16 @@
+.btn-custom-primary{
+    background-color: #5CF3B1;
+    color: #218089 !important;
+    font-weight: bold !important;
+    box-shadow: 0 6px 12px 0;
+}
+
+.btn-custom-primary:hover{
+    filter: brightness(65%);
+}
+
+.card{
+    padding: 20px;
+    background-color: #C1FFE9 !important;
+    box-shadow: 0 10px 20px 0 rgb(0,0,0,.3);
+}

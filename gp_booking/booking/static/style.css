@@ -1,0 +1,14 @@
+*{
+    box-sizing: border-box;
+    padding: o;
+    margin: 0;
+    font-size: 1.03rem;
+}
+
+.bg-green{
+    background-color: #5CF3B1;
+}
+
+body{
+    background: #98F2D1 !important;
+}

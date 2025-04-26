@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'gp_info.css' %}">
+{% endblock %}
 
 {% block content %}
 
@@ -17,13 +21,15 @@
         <div class="card-body">
             <div class="row">
                 {% for slot in doctor.slot_set.all %}
-                    <div class="col-md-4 py-4">
-                        <div class="border">
-                            <input onchange="onTimeSelected(this)" data-attr="{{ slot.id }}" type="radio"
-                                   name="timeslot" class="timeslot"/>
-                            <span>{{ slot.time }}</span>
+                    {% if not slot.is_booked %}
+                        <div class="col-md-4 py-4">
+                            <div class="border">
+                                <input onchange="onTimeSelected(this)" data-attr="{{ slot.id }}" type="radio"
+                                       name="timeslot" class="timeslot"/>
+                                <span>{{ slot.to_date }}</span>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                 {% endfor %}
                 <form id="appointment-form" style="display: none"
                       action="{% url 'booking:book-appointment' doctor_id=doctor.id patient_id=user.id %}"
@@ -45,6 +51,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ block.super }}
     <script>
         const onTimeSelected = (e) => {
             var slot_id = $(e).attr('data-attr');

@@ -14,7 +14,13 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'password']
+        fields = ['first_name', 'last_name', 'email']
+
+    def __int__(self, *args, **kwargs):
+
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
 
 class LoginForm(forms.ModelForm):
     class Meta:
@@ -34,7 +40,7 @@ class SignupForm(CustomUserCreationForm):
             Patient.objects.create(user=user, phone=self.cleaned_data.get('phone'))
         return user
     
-class AppointmentForm(forms.ModelForm):
+class DoctorAppointmentForm(forms.ModelForm):
 
     class Meta:
         model = Appointment
@@ -53,6 +59,8 @@ class AppointmentForm(forms.ModelForm):
         self.fields['slot'].queryset = available_slots
         self.fields['slot'].widget.attrs.update({'class' : 'form-control'})
         self.fields['status'].widget.attrs.update({'class' : 'form-control'})
+
+
 
 
 

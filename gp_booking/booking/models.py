@@ -2,7 +2,7 @@ from booking.user_manager import CustomUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
-
+import datetime
 
 class Role(models.Model):
     name = models.CharField(max_length=150)
@@ -52,6 +52,14 @@ class Slot(models.Model):
     def __str__(self):
         return f"{self.doctor} {self.date} {self.time} ({'Booked' if self.is_booked else 'Available'})"
 
+    def to_date(self):
+        month = self.date.strftime('%B')
+        week_day = self.date.strftime('%A')
+        day = self.date.strftime('%d')
+        time = self.time.strftime('%H')
+        min = self.time.strftime('%M')
+        return f"{month} {week_day} {day} {time}:{min}"
+
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
@@ -64,6 +72,7 @@ class Appointment(models.Model):
         ],
         default="Pending",
     )
+
 
     def save(self, *args, **kwargs):
         if self.pk:

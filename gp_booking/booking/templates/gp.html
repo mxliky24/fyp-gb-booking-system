@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'gb.css' %}">
+{% endblock %}
+
 {% block content %}
     <h1 class="text-center">All the GPs will be displayed here</h1>
 
@@ -17,7 +22,7 @@
                     </div>
                     {% if user and user.is_authenticated and user.role.name == "PATIENT" %}
                         <div class="card-footer text-center">
-                            <a href="{% url 'booking:gp_info' doctor_id=doctor.id %}" class="btn btn-lg btn-primary w-100">Book</a>
+                            <a href="{% url 'booking:gp_info' doctor_id=doctor.id %}" class="btn btn-lg btn-custom-primary w-100">Book</a>
                         </div>
                     {% endif %}
 

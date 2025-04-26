@@ -1,4 +1,4 @@
-from booking.views import gp_info, appointment, show_appointments, cancel_appointment, edit_appointment
+from booking.views import gp_info, appointment, show_appointments, cancel_appointment, edit_appointment, show_patients_appointments
 from django.urls import path
 from .views import home, signup, signin, gp
 from django.shortcuts import redirect
@@ -21,5 +21,5 @@ urlpatterns = [
 
     path('appointment_edit/<int:appointment_id>/<int:doctor_id>/<int:slot_id>/', view=edit_appointment, name='edit_appointment'),
 
-
+    path('appointment_edit_patient/<int:patient_id>/', view=show_patients_appointments, name='show_patients_appointments'),
 ]

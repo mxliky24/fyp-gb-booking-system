@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="alert alert-{{ msg.tags }}">
+                <p>{{ msg }}</p>
+            </div>
+            {% block styles %}
+                {{ block.super }}
+                <link rel="stylesheet" href="{% static 'appointment.css' %}">
+            {% endblock %}
+        {% endfor %}
+    {% endif %}
+
+
+
+    <div id="cancel-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancel Appointment Modal</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Cancel This Appointment?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-lg btn-primary" onclick="onCancelAppointment()">Confirm
+                    </button>
+                    <button type="button" class="btn btn-lg btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Appointment no</th>
+            <th>Appointee</th>
+            <th>Appointment date</th>
+            <th>Appointment time</th>
+            <th>Appointment status</th>
+            <th>Modify Appointment</th>
+            <th>Cancel Appointment</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if appointments|length == 0 %}
+            <h2>No appointments to display</h2>
+        {% else %}
+            {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.id }}</td>
+                    <td>{{ appointment.slot.doctor }}</td>
+                    <td>{{ appointment.slot.date }}</td>
+                    <td>{{ appointment.slot.time }}</td>
+                    <td><strong class="{{ appointment.status }}">{{ appointment.status }}</strong></td>
+                    <form id="{{ appointment.id }}" style="display: none;"
+                          action="{% url 'booking:cancel_appointment' appointment_id=appointment.id %}"
+                          method="post">
+                        {% csrf_token %}
+                    </form>
+                    <td>
+                        {% if appointment.status == 'Cancelled' %}
+                            <button disabled class="btn btn-lg btn-warning">Modify Appointment</button>
+
+                        {% else %}
+                            <a href="{% url 'booking:edit_appointment'  slot_id=appointment.slot_id doctor_id=appointment.slot.doctor_id appointment_id=appointment.id %}"
+                               class="btn-warning btn btn-lg">Modify Appointment</a></td>
+                        {% endif %}
+
+                    <td>
+                        {% if appointment.status == 'Cancelled' %}
+                            <button disabled onclick="onOpenModal(this)" data-attr="{{ appointment.id }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancel-modal" class="btn-danger btn btn-lg">Cancel
+                                Appointment
+                            </button>
+                        {% else %}
+                            <button onclick="onOpenModal(this)" data-attr="{{ appointment.id }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancel-modal" class="btn-danger btn btn-lg">Cancel
+                                Appointment
+                            </button>
+                        {% endif %}
+
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        const onOpenModal = (element) => {
+            var appointmentId = $(element).attr('data-attr');
+
+            console.log("Appointment no: " + appointmentId);
+
+            $('#cancel-modal').attr('data-attr', appointmentId);
+        }
+
+        const onCancelAppointment = () => {
+            var appointmentId = $('#cancel-modal').attr('data-attr');
+            console.log("appointment no: " + appointmentId);
+            document.getElementById(appointmentId.toString()).submit();
+        }
+
+
+    </script>
+{% endblock %}

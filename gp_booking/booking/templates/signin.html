@@ -3,6 +3,13 @@
 
 {% load crispy_forms_tags %}
 {% block content %}
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="alert alert-{{ msg.tags }}">
+                <p><strong>{{ msg }}</strong></p>
+            </div>
+        {% endfor %}
+    {% endif %}
     <form id="login-form" action="/signin/" method="post">
         {% csrf_token %}
         {% crispy form %}
