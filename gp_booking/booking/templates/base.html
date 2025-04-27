@@ -36,11 +36,14 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
 
-                {% if user and user.is_authenticated and not user.role.name == 'DOCTOR' %}
+                {% if user and user.is_authenticated %}
+
+                {% if not user.role.name == 'DOCTOR' %}
                 <li class="nav-item">
                     <a href="{% url 'chatapp:get_messages' email=user.email %}"
                         class="nav-link {% active_link 'chatapp:get_messages' 'active' %}">Chat</a>
                 </li>
+                {% endif %}
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle nav-link" data-bs-toggle="dropdown" href="#">{{ user.first_name }} <span
                             class="caret"></span>

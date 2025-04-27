@@ -12,7 +12,7 @@
   <h1>Welcome to the GP Booking System</h1>
   <p>Manage your appointments with ease, get quick access to your GP, and stay on top of your healthcare needs.</p>
     {% if user and user.is_authenticated and user.role.name == 'PATIENT' %}
-  <a href="{% url 'booking:gp' %}" class="btn-book">View Doctors</a>
+  <a href="{% url 'booking:gp' %}" class="btn-book">View GPs</a>
     {% endif %}
 </div>
 {% endblock %}

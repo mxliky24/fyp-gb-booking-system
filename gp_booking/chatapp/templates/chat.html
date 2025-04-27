@@ -7,12 +7,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row w-50">
-        <div class="col-md-4">
-            <p style="font-size: 1.2em; color: #218089; font-weight: bold">Meet Felix – Your Friendly Health Assistant!  Not sure how urgent your symptoms are? Just tell Felix
+    <div class="row w-50 d-flex align-items-center justify-content-between">
+        <div class="col-md-6">
+            <p style="font-size: 1em; color: #218089; font-weight: bold">Meet Felix – Your Friendly Health Assistant!  Not sure how urgent your symptoms are? Just tell Felix
                 how you're feeling, and he'll guide you! Click the bot to see what he can do!</p>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 d-flex justify-content-end">
             <img data-bs-toggle="modal" data-bs-target="#chatbot-modal" style="float: right" src="{% static 'chatbot.png' %}">
         </div>
 
@@ -24,7 +24,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>The chatbot is in maintenance. Apologize for any inconveniance</p>
+                        <p>The chatbot is in maintenance. We are sorry for any inconveniance</p>
                     </div>
                 </div>
             </div>
