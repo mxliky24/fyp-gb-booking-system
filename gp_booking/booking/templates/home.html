@@ -1,8 +1,18 @@
 
 {% extends "base.html" %}
+{% load static %}
 {% block styles %}
  {{ block.super }}
+    <link rel="stylesheet" href="{% static 'home.css' %}">
 {% endblock %}
 
 
-{% block content %} <h1 class="text-center">Welcome to the Gp booking system</h1> {% endblock %}
+{% block content %}
+<div class="welcome-section">
+  <h1>Welcome to the GP Booking System</h1>
+  <p>Manage your appointments with ease, get quick access to your GP, and stay on top of your healthcare needs.</p>
+    {% if user and user.is_authenticated and user.role.name == 'PATIENT' %}
+  <a href="{% url 'booking:gp' %}" class="btn-book">View Doctors</a>
+    {% endif %}
+</div>
+{% endblock %}
