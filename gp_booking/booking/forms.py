@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
+    password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = CustomUser
@@ -23,6 +24,8 @@ class CustomUserChangeForm(UserChangeForm):
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
 
 class LoginForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
         model = User
         fields = ['email', 'password']

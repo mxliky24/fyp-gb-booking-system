@@ -94,7 +94,7 @@ def signup(request):
             role.customuser_set.add(new_patient)
             role.save()
             login(request, new_patient)
-            return render(request, template_name='home.html', context={'patient': new_patient})
+            return redirect('booking:home')
 
         else:
             print("form is invalid")
@@ -113,9 +113,9 @@ def signin(request):
         if user is not None:
             login(request, user)
             if user.role.name == 'DOCTOR':
-                return render(request, template_name='home.html', context={'doctor': user})
+                return redirect('booking:home')
             else:
-                return render(request, template_name='home.html', context={'patient': user})
+                return redirect('booking:home')
 
         else:
             messages.error(request, "Invalid login or password")

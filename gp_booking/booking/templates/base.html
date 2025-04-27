@@ -36,7 +36,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
 
-                {% if user and user.is_authenticated %}
+                {% if user and user.is_authenticated and not user.role.name == 'DOCTOR' %}
                 <li class="nav-item">
                     <a href="{% url 'chatapp:get_messages' email=user.email %}"
                         class="nav-link {% active_link 'chatapp:get_messages' 'active' %}">Chat</a>

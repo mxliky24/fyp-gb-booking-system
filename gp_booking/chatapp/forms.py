@@ -1,4 +1,4 @@
 from django import forms
 
 class MessageForm(forms.Form):
-    message_text = forms.CharField(widget=forms.Textarea)
+    message_text = forms.CharField()
