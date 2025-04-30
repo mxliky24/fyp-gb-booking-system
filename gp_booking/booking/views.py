@@ -150,4 +150,4 @@ def appointment(request, doctor_id, patient_id):
             messages.success(request, "Your appointment has been booked")
             return redirect('booking:gp_info', doctor_id=doctor_id)
         messages.error(request, "The appointment is already booked")
-        return redirect('booking:gp_ingo', doctor_id=doctor_id)
+        return redirect('booking:gp_info', doctor_id=doctor_id)
