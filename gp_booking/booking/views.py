@@ -9,18 +9,21 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-# Create your views here.
+# Renders the homepage
 def home(request):
     return render(request=request, template_name='home.html')
 
+# Displays a list of all GPs (doctors)
 def gp(request):
     doctors = Doctor.objects.all()
     return render(request=request, template_name='gp.html', context={'doctors': doctors})
 
+# Shows available appointment slots for a specific doctor
 def show_appointments(request, doctor_id):
     doctor = Doctor.objects.get(id=doctor_id)
     if doctor is not None:
         doctor_slots =  doctor.slot_set.all()
+        # If slots are available, display them otherwise show an empty list
         if len(doctor_slots) > 0:
             return render(request=request, template_name="doctor/appointments.html", context={'slots' : doctor_slots})
         else:
@@ -28,10 +31,12 @@ def show_appointments(request, doctor_id):
     else:
         raiseExceptions(f"Could not find doctor with Id f{doctor_id}")
 
+# Displays all appointments booked by a specific patient
 def show_patients_appointments(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
     if patient is not None:
         appointments = patient.appointment_set.all()
+        # Renders patient’s appointment list, whether populated or empty
         if len(appointments) > 0:
             return render(request, "patient/appointment.html", context={"appointments": appointments})
         else:
@@ -39,6 +44,8 @@ def show_patients_appointments(request, patient_id):
     else:
         raiseExceptions(f"Could not find patient with id {patient_id}")
 
+
+# Handles cancellation of an appointment (marks as cancelled and unbooks the slot)
 def cancel_appointment(request, appointment_id):
     if request.method == "POST":
         appointment = Appointment.objects.get(id=appointment_id)
@@ -46,12 +53,14 @@ def cancel_appointment(request, appointment_id):
         appointment.slot.is_booked = False
         appointment.save()
         messages.success(request, "Appointment cancelled")
+        # Redirects based on user role after cancellation
         user = request.user
         if user.role.name == 'DOCTOR':
             return redirect('booking:show-appointments', doctor_id=appointment.slot.doctor_id)
         else:
             return redirect("booking:show_patients_appointments", patient_id=appointment.patient.id)
 
+# Handles appointment editing by doctor or patient and updates slot if needed
 def edit_appointment(request, doctor_id, appointment_id, slot_id):
     if request.method == "POST":
         slot = Slot.objects.get(id=slot_id)
@@ -61,6 +70,7 @@ def edit_appointment(request, doctor_id, appointment_id, slot_id):
         if form.is_valid():
             form.save()
             messages.success(request, "The appointment has been updated")
+            # Redirects to the relevant dashboard based on user role
             user = request.user
             if user.role.name == 'DOCTOR':
                 return redirect('booking:show-appointments', doctor_id=doctor_id)
@@ -68,6 +78,7 @@ def edit_appointment(request, doctor_id, appointment_id, slot_id):
                 appointment.status = 'Pending'
                 appointment.save()
                 return redirect('booking:show_patients_appointments', patient_id=appointment.patient_id)
+            # Pre-populates form with current slot and appointment details
     else:
         doctor = Doctor.objects.get(id=doctor_id)
         appointment = Appointment.objects.get(id=appointment_id)
@@ -81,6 +92,7 @@ def edit_appointment(request, doctor_id, appointment_id, slot_id):
         else:
             raiseExceptions("Doctor or Appointment cannot be none")
 
+# Handles new patient registration and assigns the PATIENT role
 def signup(request):
     form = SignupForm()
     if request.method == 'POST':
@@ -102,6 +114,7 @@ def signup(request):
 
     return render(request=request, template_name='signup.html', context={'form': form})
 
+# Handles user login and redirects based on user role
 def signin(request):
     form = LoginForm()
     if request.method == 'POST':
@@ -122,11 +135,11 @@ def signin(request):
             return redirect('booking:signin')
 
     return render(request=request, template_name='signin.html', context={'form': form})
-
+# Shows detailed GP info and available slots
 def gp_info(request, doctor_id):
     doctor = Doctor.objects.get(id=doctor_id)
     return render(request=request, template_name="gp_info.html", context={'doctor': doctor})
-
+# Books an appointment for a given patient with a selected slot
 def appointment(request, doctor_id, patient_id):
     if request.method == 'POST':
         patient = Patient.objects.get(user_id=patient_id)
@@ -142,6 +155,7 @@ def appointment(request, doctor_id, patient_id):
             appointment.patient = patient
             appointment.slot = slot
             user = request.user
+            # Doctors auto-confirm, patients go to pending
             if user.role.name == 'DOCTOR':
                 appointment.status = 'Confirmed'
             else:
